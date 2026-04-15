@@ -1,0 +1,95 @@
+{
+  "password": "admin",
+  "pages": [
+    {
+      "id": "home",
+      "title": "Home",
+      "slug": "/",
+      "visibleInNav": true
+    },
+    {
+      "id": "menu",
+      "title": "Menu",
+      "slug": "/menu",
+      "visibleInNav": false
+    },
+    {
+      "id": "about",
+      "title": "About Us",
+      "slug": "/about",
+      "visibleInNav": true
+    },
+    {
+      "id": "gallery",
+      "title": "Gallery",
+      "slug": "/gallery",
+      "visibleInNav": true
+    },
+    {
+      "id": "contact",
+      "title": "Contact",
+      "slug": "/contact",
+      "visibleInNav": true
+    }
+  ],
+  "content": {
+    "heroTitle": "Shivnandi pure veg restaurant",
+    "heroSubtitle": "Experience the divine taste of authentic vegetarian cuisine.",
+    "aboutText": "Shivnandi Pure Veg has been serving authentic and traditional vegetarian cuisine with the highest quality ingredients. We believe in providing an exceptional dining experience. Come taste the purity of our carefully crafted dishes, made fresh daily.",
+    "contactEmail": "kakya1123@gmail.com",
+    "contactPhone": "+91 7020902485",
+    "contactAddress": "dhule solapur highway kasabkheda near ghrushneswar temple"
+  },
+  "menu": [
+    {
+      "id": "m1",
+      "name": "Paneer Tikka",
+      "category": "Starters",
+      "price": "250",
+      "image": "https://via.placeholder.com/300x200?text=Paneer+Tikka",
+      "description": "Delicious marinated paneer roasted in tandoor."
+    },
+    {
+      "id": "m2",
+      "name": "Veg Manchurian",
+      "category": "Starters",
+      "price": "180",
+      "image": "https://via.placeholder.com/300x200?text=Veg+Manchurian",
+      "description": "Crispy vegetable balls tossed in soy-garlic sauce."
+    },
+    {
+      "id": "m3",
+      "name": "Shivnandi Special Thali",
+      "category": "Thali",
+      "price": "350",
+      "image": "https://via.placeholder.com/300x200?text=Special+Thali",
+      "description": "A wholesome thali with unlimited sabzis, dal, roti, rice, and sweet."
+    },
+    {
+      "id": "m4",
+      "name": "Dal Makhani",
+      "category": "Main Course",
+      "price": "220",
+      "image": "https://via.placeholder.com/300x200?text=Dal+Makhani",
+      "description": "Creamy and rich black lentils slow-cooked overnight."
+    }
+  ],
+  "gallery": [
+    {
+      "id": "g1",
+      "url": "https://via.placeholder.com/400x300?text=Ambience"
+    },
+    {
+      "id": "g2",
+      "url": "https://via.placeholder.com/400x300?text=Signature+Dish"
+    },
+    {
+      "id": "g3",
+      "url": "https://via.placeholder.com/400x300?text=Dining+Area"
+    },
+    {
+      "id": "g4",
+      "url": "https://via.placeholder.com/400x300?text=Fresh+Ingredients"
+    }
+  ]
+}
