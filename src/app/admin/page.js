@@ -206,6 +206,7 @@ export default function AdminDashboard() {
               ))}
             </div>
           </div>
+        )}
         {activeTab === 'settings' && (
           <div className="admin-card animate-fade-in">
             <h3>CMS Settings</h3>
