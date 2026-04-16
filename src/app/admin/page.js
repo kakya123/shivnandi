@@ -65,7 +65,7 @@ export default function AdminDashboard() {
           <h2 style={{ color: 'var(--accent-color)', fontSize: '1.5rem', margin: 0 }}>Shivnandi CMS</h2>
         </div>
         <nav>
-          {['content', 'menu', 'pages', 'gallery'].map(tab => (
+          {['content', 'menu', 'pages', 'gallery', 'settings'].map(tab => (
             <button 
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -204,6 +204,34 @@ export default function AdminDashboard() {
                   <button style={{ width: '100%', background: '#ff8a80', color: 'white', border: 'none', padding: '0.4rem', borderRadius: '4px', cursor: 'pointer' }} onClick={() => { const g = safeData.gallery.filter(i => i.id !== img.id); setData({...data, gallery: g}) }}>Delete</button>
                 </div>
               ))}
+            </div>
+          </div>
+        {activeTab === 'settings' && (
+          <div className="admin-card animate-fade-in">
+            <h3>CMS Settings</h3>
+            <div style={{ marginTop: '2rem', maxWidth: '400px' }}>
+              <label>Admin Password</label>
+              <input 
+                type="text" 
+                className="admin-input" 
+                value={data.password || ''} 
+                onChange={e => setData({...data, password: e.target.value})} 
+                placeholder="Set new password"
+              />
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+                Type a new password and click "Save All Changes" at the top to update.
+              </p>
+
+              <h4 style={{ marginTop: '2.5rem' }}>Account Recovery</h4>
+              <label>Recovery Email</label>
+              <input 
+                className="admin-input" 
+                value={safeData.content.contactEmail || ''} 
+                disabled 
+              />
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                Recovery emails are sent to the primary contact email set in the Content tab.
+              </p>
             </div>
           </div>
         )}

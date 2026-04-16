@@ -7,47 +7,60 @@ export async function POST(request) {
     const { email } = await request.json();
     const data = await getDbData();
     
-    // Verify if email matches the authorized contactEmail in DB
-    if (email !== data.content.contactEmail) {
+    // Check if email matches contact email or target user email
+    const targetEmail = 'kakya1123@gmail.com';
+    const contactEmail = data.content?.contactEmail;
+
+    if (email !== targetEmail && email !== contactEmail) {
       return NextResponse.json({ error: 'Unauthorized email address' }, { status: 401 });
     }
 
-    // Generate 6 digit OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+    // Generate a new random password
+    const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let newPassword = "";
+    for (let i = 0; i < 8; i++) {
+      newPassword += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
 
-    // Save to DB
-    data.otp = otp;
-    data.otpExpires = otpExpires;
+    // Save New Password to DB
+    data.password = newPassword;
     await saveDbData(data);
 
-    // Setup Nodemailer (User needs to configure real credentials later)
+    // Setup Nodemailer
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env.EMAIL_USER || 'your_email@gmail.com',  
-        pass: process.env.EMAIL_PASS || 'your_app_password'
+        user: process.env.EMAIL_USER,  
+        pass: process.env.EMAIL_PASS
       }
     });
 
     const mailOptions = {
-      from: 'Shivnandi CMS System',
+      from: 'Shivnandi Restaurant CMS',
       to: email,
-      subject: 'Shivnandi CMS - Password Reset OTP',
-      text: `Your OTP for resetting the CMS password is: ${otp}. It is valid for 10 minutes.`
+      subject: 'Your New CMS Password',
+      text: `Hello, \n\nYour Shivnandi CMS password has been reset. \n\nNew Password: ${newPassword}\n\nPlease log in and change this password from settings if needed.\n\nRegards,\nShivnandi Backend`
     };
 
-    // We will attempt to send. If credentials are fake, we just print to console for local testing.
     try {
-      if (!process.env.EMAIL_USER) throw new Error("No Email Credentials - Mocking");
+      if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+        throw new Error("Missing Email Credentials");
+      }
       await transporter.sendMail(mailOptions);
     } catch (e) {
       console.log('----------------------------------------------------');
-      console.log(`[DEVELOPMENT MODE] OTP Generated for ${email}: ${otp}`);
+      console.log(`[PASS RESET] New Password for ${email}: ${newPassword}`);
+      console.log(`[ERROR] Email failed to send: ${e.message}`);
       console.log('----------------------------------------------------');
+      // Even if email fails, in dev/logs we show the password so the user isn't locked out
+      return NextResponse.json({ 
+        success: true, 
+        message: 'Password reset successful. Since Email credentials are not configured in Vercel, the new password has been logged to Server Logs for recovery.',
+        debugPassword: process.env.NODE_ENV === 'development' ? newPassword : null
+      });
     }
     
-    return NextResponse.json({ success: true, message: 'OTP sent to email (Check Server Console in Dev Mode)' });
+    return NextResponse.json({ success: true, message: 'A new password has been sent to your email address.' });
   } catch (err) {
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
   }

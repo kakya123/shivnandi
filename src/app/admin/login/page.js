@@ -52,7 +52,7 @@ export default function Login() {
     
     if (res.ok) {
       setMessage(data.message);
-      setStep('otp');
+      setStep('login');
     } else {
       setError(data.error);
     }
@@ -127,7 +127,7 @@ export default function Login() {
         {step === 'forgot' && (
           <form onSubmit={handleRequestOtp}>
             <p style={{ fontSize: '0.9rem', marginBottom: '1.5rem', color: 'var(--text-muted)' }}>
-              Enter the administration email address (Contact Email set in CMS) to receive an OTP.
+              Enter the administration email address to receive a new system password.
             </p>
             <div style={{ marginBottom: '1.5rem' }}>
               <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Admin Email</label>
@@ -136,54 +136,16 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="admin-input" 
-                placeholder="info@shivnandipureveg.com"
+                placeholder="kakya1123@gmail.com"
                 required
               />
             </div>
             <button type="submit" className="btn btn-primary" style={{ width: '100%', marginBottom: '1rem' }} disabled={loading}>
-              {loading ? 'Sending...' : 'Send OTP'}
+              {loading ? 'Sending...' : 'Send New Password'}
             </button>
             <div style={{ textAlign: 'center' }}>
               <button type="button" onClick={() => setStep('login')} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', textDecoration: 'underline', fontSize: '0.9rem' }}>
                 Back to Login
-              </button>
-            </div>
-          </form>
-        )}
-
-        {step === 'otp' && (
-          <form onSubmit={handleResetPassword}>
-            <p style={{ fontSize: '0.9rem', marginBottom: '1.5rem', color: 'var(--text-muted)' }}>
-              An OTP has been sent to your email. Please enter it below along with your new password.
-            </p>
-            <div style={{ marginBottom: '1rem' }}>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>OTP Code</label>
-              <input 
-                type="text" 
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                className="admin-input" 
-                placeholder="123456"
-                required
-              />
-            </div>
-            <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>New Password</label>
-              <input 
-                type="password" 
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                className="admin-input" 
-                placeholder="Enter new password"
-                required
-              />
-            </div>
-            <button type="submit" className="btn btn-primary" style={{ width: '100%', marginBottom: '1rem' }} disabled={loading}>
-              {loading ? 'Resetting...' : 'Reset Password'}
-            </button>
-            <div style={{ textAlign: 'center' }}>
-              <button type="button" onClick={() => setStep('login')} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', textDecoration: 'underline', fontSize: '0.9rem' }}>
-                Cancel
               </button>
             </div>
           </form>
