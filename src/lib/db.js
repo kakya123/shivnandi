@@ -25,9 +25,23 @@ if (mongoose.models && mongoose.models.DataStore) {
 let cachedConn = null;
 async function connectMongo() {
   if (cachedConn) return cachedConn;
-  if (!process.env.MONGODB_URI) return null;
-  cachedConn = await mongoose.connect(process.env.MONGODB_URI, { bufferCommands: false });
-  return cachedConn;
+  if (!process.env.MONGODB_URI) {
+    console.log('No MONGODB_URI found, using local fallback');
+    return null;
+  }
+  try {
+    console.log('Connecting to MongoDB...');
+    cachedConn = await mongoose.connect(process.env.MONGODB_URI, { 
+      bufferCommands: false,
+      serverSelectionTimeoutMS: 5000 // 5 seconds timeout
+    });
+    console.log('MongoDB connected successfully');
+    return cachedConn;
+  } catch (err) {
+    console.error('MongoDB connection error:', err.message);
+    cachedConn = null;
+    return null;
+  }
 }
 
 export async function getDbData() {
