@@ -11,8 +11,24 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     fetch('/api/data')
-      .then(res => res.json())
-      .then(d => setData(d));
+      .then(res => {
+        if (!res.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return res.json();
+      })
+      .then(d => {
+        if (d && !d.error) {
+          setData(d);
+        } else {
+          console.error("Failed to load data:", d);
+          setData({ error: "Failed to load data from server." });
+        }
+      })
+      .catch(err => {
+        console.error("Error fetching data:", err);
+        setData({ error: "Error fetching data. Please try again later." });
+      });
   }, []);
 
   const handleSave = async () => {
@@ -32,6 +48,15 @@ export default function AdminDashboard() {
   };
 
   if (!data) return <div style={{ padding: '2rem' }}>Loading CMS Dashboard...</div>;
+  if (data.error) return <div style={{ padding: '2rem', color: 'red' }}>Error: {data.error}</div>;
+
+  // Ensure default structure exists to prevent crashes
+  const safeData = {
+    content: data.content || {},
+    menu: data.menu || [],
+    pages: data.pages || [],
+    gallery: data.gallery || []
+  };
 
   return (
     <div className="admin-layout">
@@ -77,29 +102,29 @@ export default function AdminDashboard() {
             <div style={{ display: 'grid', gap: '1rem', marginTop: '1rem' }}>
               <div>
                 <label>Hero Title</label>
-                <input className="admin-input" value={data.content.heroTitle} onChange={e => setData({...data, content: {...data.content, heroTitle: e.target.value}})} />
+                <input className="admin-input" value={safeData.content.heroTitle || ''} onChange={e => setData({...data, content: {...safeData.content, heroTitle: e.target.value}})} />
               </div>
               <div>
                 <label>Hero Subtitle</label>
-                <input className="admin-input" value={data.content.heroSubtitle} onChange={e => setData({...data, content: {...data.content, heroSubtitle: e.target.value}})} />
+                <input className="admin-input" value={safeData.content.heroSubtitle || ''} onChange={e => setData({...data, content: {...safeData.content, heroSubtitle: e.target.value}})} />
               </div>
               <div>
                 <label>About Us Text</label>
-                <textarea className="admin-input" rows="4" value={data.content.aboutText} onChange={e => setData({...data, content: {...data.content, aboutText: e.target.value}})} />
+                <textarea className="admin-input" rows="4" value={safeData.content.aboutText || ''} onChange={e => setData({...data, content: {...safeData.content, aboutText: e.target.value}})} />
               </div>
               
               <h3 style={{ marginTop: '2rem' }}>Contact Information</h3>
               <div>
                 <label>Email</label>
-                <input className="admin-input" value={data.content.contactEmail} onChange={e => setData({...data, content: {...data.content, contactEmail: e.target.value}})} />
+                <input className="admin-input" value={safeData.content.contactEmail || ''} onChange={e => setData({...data, content: {...safeData.content, contactEmail: e.target.value}})} />
               </div>
               <div>
                 <label>Phone</label>
-                <input className="admin-input" value={data.content.contactPhone} onChange={e => setData({...data, content: {...data.content, contactPhone: e.target.value}})} />
+                <input className="admin-input" value={safeData.content.contactPhone || ''} onChange={e => setData({...data, content: {...safeData.content, contactPhone: e.target.value}})} />
               </div>
               <div>
                 <label>Address</label>
-                <input className="admin-input" value={data.content.contactAddress} onChange={e => setData({...data, content: {...data.content, contactAddress: e.target.value}})} />
+                <input className="admin-input" value={safeData.content.contactAddress || ''} onChange={e => setData({...data, content: {...safeData.content, contactAddress: e.target.value}})} />
               </div>
             </div>
           </div>
@@ -107,9 +132,9 @@ export default function AdminDashboard() {
 
         {activeTab === 'menu' && (
           <div className="admin-card animate-fade-in">
-            <button className="btn btn-primary" style={{ marginBottom: '1.5rem' }} onClick={() => setData({...data, menu: [{id: 'm'+Date.now(), name: 'New Item', category: 'General', price: 0, description: '', image: 'https://via.placeholder.com/300x200'}, ...data.menu]})}>+ Add Menu Item</button>
+            <button className="btn btn-primary" style={{ marginBottom: '1.5rem' }} onClick={() => setData({...data, menu: [{id: 'm'+Date.now(), name: 'New Item', category: 'General', price: 0, description: '', image: 'https://via.placeholder.com/300x200'}, ...safeData.menu]})}>+ Add Menu Item</button>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              {data.menu.map((item, idx) => (
+              {safeData.menu.map((item, idx) => (
                 <div key={item.id} style={{ padding: '1rem', border: '1px solid #ddd', borderRadius: '8px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                   <div>
                     <label>Item Name</label>
@@ -132,7 +157,7 @@ export default function AdminDashboard() {
                     <input className="admin-input" value={item.description} onChange={e => { const m = [...data.menu]; m[idx].description = e.target.value; setData({...data, menu: m}) }} />
                   </div>
                   <div style={{ gridColumn: '1 / -1', textAlign: 'right' }}>
-                    <button className="btn" style={{ background: '#ffebee', color: '#c62828', padding: '0.5rem 1rem' }} onClick={() => { const m = data.menu.filter(i => i.id !== item.id); setData({...data, menu: m}) }}>Delete Item</button>
+                    <button className="btn" style={{ background: '#ffebee', color: '#c62828', padding: '0.5rem 1rem' }} onClick={() => { const m = safeData.menu.filter(i => i.id !== item.id); setData({...data, menu: m}) }}>Delete Item</button>
                   </div>
                 </div>
               ))}
@@ -152,14 +177,14 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {data.pages.map((page, idx) => (
+                {safeData.pages.map((page, idx) => (
                   <tr key={page.id} style={{ borderBottom: '1px solid #eee' }}>
                     <td style={{ padding: '1rem 0' }}>
-                      <input className="admin-input" style={{ marginBottom: 0 }} value={page.title} onChange={e => { const p = [...data.pages]; p[idx].title = e.target.value; setData({...data, pages: p}) }} />
+                      <input className="admin-input" style={{ marginBottom: 0 }} value={page.title || ''} onChange={e => { const p = [...safeData.pages]; p[idx].title = e.target.value; setData({...data, pages: p}) }} />
                     </td>
                     <td>{page.slug}</td>
                     <td>
-                      <input type="checkbox" style={{ transform: 'scale(1.5)', marginLeft: '1rem' }} checked={page.visibleInNav} onChange={e => { const p = [...data.pages]; p[idx].visibleInNav = e.target.checked; setData({...data, pages: p}) }} />
+                      <input type="checkbox" style={{ transform: 'scale(1.5)', marginLeft: '1rem' }} checked={page.visibleInNav || false} onChange={e => { const p = [...safeData.pages]; p[idx].visibleInNav = e.target.checked; setData({...data, pages: p}) }} />
                     </td>
                   </tr>
                 ))}
@@ -170,13 +195,13 @@ export default function AdminDashboard() {
 
         {activeTab === 'gallery' && (
           <div className="admin-card animate-fade-in">
-            <button className="btn btn-primary" style={{ marginBottom: '1.5rem' }} onClick={() => setData({...data, gallery: [{id: 'g'+Date.now(), url: 'https://via.placeholder.com/400x300'}, ...data.gallery]})}>+ Add Image</button>
+            <button className="btn btn-primary" style={{ marginBottom: '1.5rem' }} onClick={() => setData({...data, gallery: [{id: 'g'+Date.now(), url: 'https://via.placeholder.com/400x300'}, ...safeData.gallery]})}>+ Add Image</button>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1.5rem' }}>
-              {data.gallery.map((img, idx) => (
+              {safeData.gallery.map((img, idx) => (
                 <div key={img.id} style={{ position: 'relative', border: '1px solid #ddd', borderRadius: '8px', padding: '0.5rem' }}>
                   <img src={img.url} style={{ width: '100%', height: '150px', objectFit: 'cover', borderRadius: '4px', marginBottom: '0.5rem' }} />
-                  <input className="admin-input" style={{ fontSize: '0.8rem', padding: '0.4rem' }} value={img.url} onChange={e => { const g = [...data.gallery]; g[idx].url = e.target.value; setData({...data, gallery: g}) }} placeholder="Image URL" />
-                  <button style={{ width: '100%', background: '#ff8a80', color: 'white', border: 'none', padding: '0.4rem', borderRadius: '4px', cursor: 'pointer' }} onClick={() => { const g = data.gallery.filter(i => i.id !== img.id); setData({...data, gallery: g}) }}>Delete</button>
+                  <input className="admin-input" style={{ fontSize: '0.8rem', padding: '0.4rem' }} value={img.url || ''} onChange={e => { const g = [...safeData.gallery]; g[idx].url = e.target.value; setData({...data, gallery: g}) }} placeholder="Image URL" />
+                  <button style={{ width: '100%', background: '#ff8a80', color: 'white', border: 'none', padding: '0.4rem', borderRadius: '4px', cursor: 'pointer' }} onClick={() => { const g = safeData.gallery.filter(i => i.id !== img.id); setData({...data, gallery: g}) }}>Delete</button>
                 </div>
               ))}
             </div>
