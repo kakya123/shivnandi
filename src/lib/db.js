@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import mongoose from 'mongoose';
+import defaultData from '../../data.json';
 
 const dataFilePath = path.join(process.cwd(), 'data.json');
 
@@ -37,18 +38,17 @@ export async function getDbData() {
       let doc = await DataStore.findOne();
       if (!doc) {
         // Init from data.json if Mongo is empty
-        const fileData = JSON.parse(fs.readFileSync(dataFilePath, 'utf8'));
-        doc = await DataStore.create(fileData);
+        doc = await DataStore.create(defaultData);
       }
       return doc.toObject();
     } else {
-      // Fallback to local data.json
-      const fileContents = fs.readFileSync(dataFilePath, 'utf8');
-      return JSON.parse(fileContents);
+      // Fallback to local defaultData
+      return defaultData;
     }
   } catch (error) {
     console.error('Error reading database:', error);
-    return null;
+    // If Mongo fails, at least return the defaultData to avoid breaking the UI
+    return defaultData;
   }
 }
 
